@@ -151,12 +151,11 @@ There are two main ways to perform validation. The first one, `match` takes a sc
 const UserSchema = object<User>({ name: string, age: optional(number) })
 
 match(UserSchema, json, (errors: ValidationError[]) => {
-  // Error! The json didn't match the schema.
-  console.log(errors)
-  throw new Error('Validation error!')
+  res.status(400).send({status: 'error', errors})
 }, (user: User) => {
-  // The json matched the schema. Do something with it...
-  return db.saveUser(user).then(...)
+  db.saveUser(user)
+    .then(() => res.status(200).send({status: 'ok'}))
+    .catch(error => res.status(500).send({status: 'error', error})
 })
 ```
 
